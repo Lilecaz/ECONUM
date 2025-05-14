@@ -29,9 +29,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Servir les fichiers statiques
-# Dans main.py
-app.mount("/static", StaticFiles(directory="../Frontend/static"), name="static")
 # Modèle de données
 class TemperatureParams(BaseModel):
     ambient_temperature: float  # Ta (température ambiante)
