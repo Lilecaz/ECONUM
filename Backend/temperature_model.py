@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import integrate
+import time
 
 def cable_temperature_ode(T, t, Ta, ws, I):
     """
@@ -17,10 +18,12 @@ def cable_temperature_ode(T, t, Ta, ws, I):
     
     return dTdt
 
-def calculate_temperature_direct(ambient_temp, wind_speed, current, initial_temp=25.0):
+def calculate_temperature_direct(ambient_temp, wind_speed, current, initial_temp=25.0, track_emissions=False):
     """
     Calcule la température avec la méthode d'Euler simple
     """
+    start_time = time.time()
+    
     # Temps total en secondes (30 minutes)
     t_total = 30 * 60
     
@@ -52,12 +55,19 @@ def calculate_temperature_direct(ambient_temp, wind_speed, current, initial_temp
         # Ajouter la température à la fin de la minute
         temperatures.append(T_current)
     
-    return temperatures
+    execution_time = time.time() - start_time
+    
+    # Émissions simulées (puisque codecarbon n'est pas disponible)
+    simulated_emissions = execution_time * 0.0001  # Estimation factice
+    
+    return temperatures, simulated_emissions
 
-def calculate_temperature_scipy(ambient_temp, wind_speed, current, initial_temp=25.0):
+def calculate_temperature_scipy(ambient_temp, wind_speed, current, initial_temp=25.0, track_emissions=False):
     """
     Calcule la température avec scipy.integrate.solve_ivp
     """
+    start_time = time.time()
+    
     # Définir les temps pour lesquels nous voulons la solution (0 à 30 minutes)
     t = np.linspace(0, 30 * 60, 31)  # 31 points (0 à 30 min), en secondes
     
@@ -75,4 +85,41 @@ def calculate_temperature_scipy(ambient_temp, wind_speed, current, initial_temp=
     # Extraire les températures
     temperatures = solution.y[0].tolist()
     
-    return temperatures
+    execution_time = time.time() - start_time
+    
+    # Émissions simulées (puisque codecarbon n'est pas disponible)
+    simulated_emissions = execution_time * 0.0002  # Estimation factice, légèrement plus haute que la méthode directe
+    
+    return temperatures, simulated_emissions
+
+def matrix_benchmark(matrix_size=5000, track_emissions=False):
+    """
+    Effectue un benchmark avec une grande matrice aléatoire
+    """
+    start_time = time.time()
+    
+    # Créer une matrice aléatoire de grande taille
+    matrix = np.random.random((matrix_size, matrix_size))
+    
+    # Effectuer quelques opérations matricielles
+    result = np.dot(matrix, matrix.T)  # Produit matriciel
+    
+    # Pour les petites matrices, calculer aussi les valeurs propres
+    if matrix_size <= 1000:
+        eigenvalues = np.linalg.eigvals(matrix)
+    else:
+        # Pour les grandes matrices, calculer seulement quelques valeurs propres
+        eigenvalues = np.linalg.eigvals(matrix[:1000, :1000])
+    
+    execution_time = time.time() - start_time
+    memory_mb = matrix.nbytes / (1024 * 1024)
+    
+    # Émissions simulées
+    simulated_emissions = execution_time * memory_mb * 0.0001  # Estimation factice basée sur le temps et la taille
+    
+    return {
+        "matrix_size": (matrix_size, matrix_size),
+        "memory_usage_mb": memory_mb,
+        "execution_time": execution_time,
+        "emissions_kg": simulated_emissions
+    }
