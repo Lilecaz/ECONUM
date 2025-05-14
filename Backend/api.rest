@@ -23,18 +23,6 @@ Content-Type: {{contentType}}
   "method": "scipy"
 }
 
-### Prédiction avec la méthode directe
-POST {{baseUrl}}/predict/ HTTP/1.1
-Content-Type: {{contentType}}
-
-{
-  "ambient_temperature": 25.0,
-  "wind_speed": 5.0,
-  "current_intensity": 100.0,
-  "initial_temp": 25.0,
-  "method": "direct"
-}
-
 ### Test avec température ambiante élevée
 POST {{baseUrl}}/predict/ HTTP/1.1
 Content-Type: {{contentType}}
