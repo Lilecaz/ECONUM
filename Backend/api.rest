@@ -1,0 +1,76 @@
+### Variables globales
+@baseUrl = http://localhost:8000
+@contentType = application/json
+
+### ----------------------------------------
+### Test de l'API principale - Endpoint racine
+### ----------------------------------------
+GET {{baseUrl}}/ HTTP/1.1
+
+### ----------------------------------------
+### Tests de prédiction de température
+### ----------------------------------------
+
+### Prédiction avec la méthode SciPy (par défaut)
+POST {{baseUrl}}/predict/ HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+  "ambient_temperature": 25.0,
+  "wind_speed": 5.0,
+  "current_intensity": 100.0,
+  "initial_temp": 25.0,
+  "method": "scipy"
+}
+
+### Prédiction avec la méthode directe
+POST {{baseUrl}}/predict/ HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+  "ambient_temperature": 25.0,
+  "wind_speed": 5.0,
+  "current_intensity": 100.0,
+  "initial_temp": 25.0,
+  "method": "direct"
+}
+
+### Test avec température ambiante élevée
+POST {{baseUrl}}/predict/ HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+  "ambient_temperature": 40.0,
+  "wind_speed": 5.0,
+  "current_intensity": 100.0,
+  "method": "scipy"
+}
+
+### Test avec vent fort
+POST {{baseUrl}}/predict/ HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+  "ambient_temperature": 25.0,
+  "wind_speed": 20.0,
+  "current_intensity": 100.0,
+  "method": "scipy"
+}
+
+### Test avec intensité de courant élevée
+POST {{baseUrl}}/predict/ HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+  "ambient_temperature": 25.0,
+  "wind_speed": 5.0,
+  "current_intensity": 250.0,
+  "method": "scipy"
+}
+
+### ----------------------------------------
+### Tests du benchmark de matrices NumPy
+### ----------------------------------------
+
+### Benchmark avec matrice 1000x1000
+GET {{baseUrl}}/benchmark/matrix/?size=1000 HTTP/1.1
