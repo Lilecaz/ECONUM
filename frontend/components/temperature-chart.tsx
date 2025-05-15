@@ -1,9 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { Chart, registerables } from "chart.js"
-
-Chart.register(...registerables)
+import Plotly from "plotly.js-dist-min"
 
 interface TemperatureChartProps {
   timestamps: string[]
@@ -11,109 +9,96 @@ interface TemperatureChartProps {
 }
 
 export function TemperatureChart({ timestamps, temperatures }: TemperatureChartProps) {
-  const chartRef = useRef<HTMLCanvasElement>(null)
-  const chartInstance = useRef<Chart | null>(null)
+  const chartRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!chartRef.current) return
 
-    // Détruire le graphique existant s'il y en a un
-    if (chartInstance.current) {
-      chartInstance.current.destroy()
+    // Définir les données pour le graphique
+    const trace = {
+      x: timestamps,
+      y: temperatures,
+      type: "scatter",
+      mode: "lines+markers",
+      name: "Température du câble",
+      line: {
+        color: "rgb(234, 88, 12)",
+        width: 3,
+      },
+      marker: {
+        color: "rgb(234, 88, 12)",
+        size: 6,
+      },
+      fill: "tozeroy",
+      fillcolor: "rgba(234, 88, 12, 0.2)",
     }
 
-    const ctx = chartRef.current.getContext("2d")
-    if (!ctx) return
-
-    // Déterminer les couleurs en fonction des températures
-    const getGradientColor = (ctx: CanvasRenderingContext2D) => {
-      const gradient = ctx.createLinearGradient(0, 0, 0, 400)
-      gradient.addColorStop(0, "rgba(234, 88, 12, 0.8)")
-      gradient.addColorStop(1, "rgba(234, 88, 12, 0.1)")
-      return gradient
+    // Définir la mise en page du graphique
+    const layout = {
+      title: {
+        text: "Évolution de la température du câble",
+        font: {
+          family: "Inter, sans-serif",
+          size: 18,
+        },
+      },
+      autosize: true,
+      height: 300,
+      margin: { l: 50, r: 30, t: 50, b: 50 },
+      xaxis: {
+        title: {
+          text: "Temps (minutes)",
+          font: {
+            family: "Inter, sans-serif",
+            size: 14,
+          },
+        },
+        gridcolor: "rgba(0, 0, 0, 0.05)",
+      },
+      yaxis: {
+        title: {
+          text: "Température (°C)",
+          font: {
+            family: "Inter, sans-serif",
+            size: 14,
+          },
+        },
+        gridcolor: "rgba(0, 0, 0, 0.1)",
+      },
+      plot_bgcolor: "rgba(0, 0, 0, 0)",
+      paper_bgcolor: "rgba(0, 0, 0, 0)",
+      hovermode: "closest",
+      hoverlabel: {
+        bgcolor: "rgba(0, 0, 0, 0.8)",
+        font: { color: "white" },
+      },
     }
 
-    // Créer un nouveau graphique
-    chartInstance.current = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: timestamps,
-        datasets: [
-          {
-            label: "Température du câble (°C)",
-            data: temperatures,
-            borderColor: "rgb(234, 88, 12)",
-            backgroundColor: getGradientColor(ctx),
-            borderWidth: 2,
-            pointRadius: 3,
-            pointBackgroundColor: "rgb(234, 88, 12)",
-            pointBorderColor: "#fff",
-            pointHoverRadius: 5,
-            pointHoverBackgroundColor: "rgb(234, 88, 12)",
-            pointHoverBorderColor: "#fff",
-            tension: 0.3,
-            fill: true,
-          },
-        ],
+    // Définir les options de configuration
+    const config = {
+      responsive: true,
+      displayModeBar: true,
+      modeBarButtonsToRemove: ["lasso2d", "select2d"],
+      displaylogo: false,
+      toImageButtonOptions: {
+        format: "png",
+        filename: "temperature_cable",
+        height: 500,
+        width: 700,
+        scale: 2,
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "top",
-          },
-          tooltip: {
-            mode: "index",
-            intersect: false,
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
-            titleColor: "#fff",
-            bodyColor: "#fff",
-            borderColor: "rgba(255, 255, 255, 0.2)",
-            borderWidth: 1,
-          },
-        },
-        scales: {
-          x: {
-            grid: {
-              display: false,
-            },
-            ticks: {
-              maxRotation: 0,
-              autoSkip: true,
-              maxTicksLimit: 10,
-            },
-          },
-          y: {
-            beginAtZero: false,
-            grid: {
-              color: "rgba(0, 0, 0, 0.05)",
-            },
-            ticks: {
-              callback: (value) => value + " °C",
-            },
-          },
-        },
-        interaction: {
-          mode: "nearest",
-          axis: "x",
-          intersect: false,
-        },
-        animations: {
-          tension: {
-            duration: 1000,
-            easing: "linear",
-          },
-        },
-      },
-    })
+    }
 
+    // Créer le graphique
+    Plotly.newPlot(chartRef.current, [trace], layout, config)
+
+    // Nettoyer lors du démontage du composant
     return () => {
-      if (chartInstance.current) {
-        chartInstance.current.destroy()
+      if (chartRef.current) {
+        Plotly.purge(chartRef.current)
       }
     }
   }, [timestamps, temperatures])
 
-  return <canvas ref={chartRef} />
+  return <div ref={chartRef} className="w-full h-full" />
 }
