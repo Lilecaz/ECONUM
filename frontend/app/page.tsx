@@ -1,23 +1,25 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, AlertTriangle, ThermometerSun } from "lucide-react"
+import { Loader2, AlertTriangle, ThermometerSun, Leaf } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { TemperatureChart } from "@/components/temperature-chart"
-import { TemperatureGauge } from "@/components/temperature-gauge"
+import { CarbonEmissionsCard } from "@/components/carbon-emissions-card"
 
 interface TemperatureData {
   temperatures: number[]
   execution_time_seconds: number
   timestamps: number[]
+  carbon_emissions_kg: number
+  note?: string
 }
 
 export default function Home() {
@@ -191,7 +193,7 @@ export default function Home() {
                       getTemperatureStatus() === "danger"
                         ? "destructive"
                         : getTemperatureStatus() === "warning"
-                          ? "outline"
+                          ? "secondary"
                           : "default"
                     }
                     className="ml-2"
@@ -236,9 +238,10 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="mb-4">
-                    <TemperatureGauge value={getMaxTemperature()} />
-                  </div>
+                  <CarbonEmissionsCard
+                    emissionsKg={data.carbon_emissions_kg}
+                    note={data.note}
+                  />
 
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
                     <TabsList className="grid w-full grid-cols-2">
