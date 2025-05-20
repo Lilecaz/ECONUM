@@ -9,7 +9,6 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Prévision de Température de Câble | ECONUM",
   description: "Application de prédiction de température de câble électrique",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -20,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
           {children}
         </ThemeProvider>
       </body>

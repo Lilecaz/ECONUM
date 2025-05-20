@@ -16,7 +16,7 @@ if not os.path.exists('static'):
         f.write("<html><body><h1>API de Prédiction de Température de Câble</h1></body></html>")
 
 # Importer les fonctions de calcul
-from temperature_model import calculate_temperature_direct, calculate_temperature_scipy, matrix_benchmark
+from temperature_model import calculate_temperature_scipy, matrix_benchmark
 
 app = FastAPI(title="API de Prédiction de Température de Câble")
 
@@ -52,14 +52,7 @@ async def predict_temperature(params: TemperatureParams):
     
     try:
         # Choisir la méthode de calcul
-        if params.method == "direct":
-            temperatures, emissions = calculate_temperature_direct(
-                params.ambient_temperature,
-                params.wind_speed,
-                params.current_intensity,
-                params.initial_temp
-            )
-        elif params.method == "scipy":
+        if params.method == "scipy":
             temperatures, emissions = calculate_temperature_scipy(
                 params.ambient_temperature,
                 params.wind_speed,
