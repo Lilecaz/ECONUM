@@ -191,8 +191,8 @@ export default function Home() {
                       getTemperatureStatus() === "danger"
                         ? "destructive"
                         : getTemperatureStatus() === "warning"
-                          ? "warning"
-                          : "success"
+                          ? "outline"
+                          : "default"
                     }
                     className="ml-2"
                   >
