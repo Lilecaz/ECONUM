@@ -8,6 +8,7 @@ import numpy as np
 from scipy import integrate
 import os
 
+
 # Créer le dossier static s'il n'existe pas
 if not os.path.exists('static'):
     os.makedirs('static')
@@ -65,10 +66,12 @@ async def predict_temperature(params: TemperatureParams):
         execution_time = time.time() - start_time
         
         # Préparer la réponse
+        # Générer les timestamps en millisecondes pour chaque température
+        timestamps = [int(i * 60 * 1000) for i in range(len(temperatures))]
         result = {
             "temperatures": temperatures,
             "execution_time_seconds": execution_time,
-            "timestamps": [i for i in range(31)],  # 0 à 30 minutes
+            "timestamps": timestamps,
             "carbon_emissions_kg": emissions,
             "note": "Les émissions de CO2 sont des estimations simplifiées"
         }

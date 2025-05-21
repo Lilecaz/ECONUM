@@ -88,6 +88,12 @@ export default function Home() {
     return "safe"
   }
 
+  useEffect(() => {
+    if (data) {
+      console.log("Données de température:", data)
+    }
+  }
+    , [data])
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
@@ -261,7 +267,7 @@ export default function Home() {
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Temps (min)</TableHead>
+                              <TableHead>Temps (ms)</TableHead>
                               <TableHead>Température (°C)</TableHead>
                             </TableRow>
                           </TableHeader>

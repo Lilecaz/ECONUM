@@ -1,6 +1,7 @@
 import numpy as np
 import time
 from scipy.integrate import odeint
+from codecarbon import EmissionsTracker
 
 def cable_temperature_ode(T, t, Ta, ws, I):
     """
@@ -21,8 +22,8 @@ def cable_temperature_ode(T, t, Ta, ws, I):
     # Calcul du terme de chauffage par effet Joule
     joule_term = I**1.4 / 73785 * 130
     
-    # Calcul de la variation de température
-    dTdt = (1 / 60) * convection_term * (T - Ta - joule_term)
+    # Calcul en millisecondes
+    dTdt = (1 / 60000) * convection_term * (T - Ta - joule_term)
     
     return dTdt
 
@@ -31,32 +32,32 @@ def calculate_temperature_scipy(ambient_temp, wind_speed, current, initial_temp=
     Calcule la température avec scipy.integrate.odeint
     """
     start_time = time.time()
+    tracker = EmissionsTracker() if track_emissions else None
+    if tracker:
+        tracker.start()
     
     # Définir les temps pour lesquels nous voulons la solution (0 à 30 minutes)
-    t = np.linspace(0, 30 * 60, 31)  # 31 points (0 à 30 min), en secondes
-    
+    t = np.linspace(0, 30 * 60 * 1000, 1800)
     # Redéfinir la fonction ODE pour qu'elle soit compatible avec odeint
-    def ode_for_odeint(y, t):
-        return cable_temperature_ode(y, t, ambient_temp, wind_speed, current)
+    def ode_func(T, t):
+        return cable_temperature_ode(T, t, ambient_temp, wind_speed, current)
     
-    # Résoudre l'équation différentielle avec odeint
-    solution = odeint(
-        ode_for_odeint,     # Fonction d'équation différentielle
-        initial_temp,       # Condition initiale
-        t,                  # Points temporels pour l'évaluation
-        rtol=1e-6,          # Tolérance relative
-        atol=1e-9           # Tolérance absolue
-    )
+    # Résoudre l'ODE
+    initial_conditions = [initial_temp]
+    solution = odeint(ode_func, initial_conditions, t)
+
     
     # Extraire les températures (odeint renvoie un tableau différent de solve_ivp)
     temperatures = solution.flatten().tolist()
     
     execution_time = time.time() - start_time
     
-    # Émissions simulées
-    simulated_emissions = execution_time * 0.0002  # Estimation factice
-    
-    return temperatures, simulated_emissions
+    if tracker:
+        emissions = tracker.stop()
+    else:
+        emissions = 0.0
+
+    return temperatures, emissions
 
 def matrix_benchmark(matrix_size=5000, track_emissions=False):
     """
@@ -64,6 +65,9 @@ def matrix_benchmark(matrix_size=5000, track_emissions=False):
     """
     start_time = time.time()
     
+    tracker = EmissionsTracker() if track_emissions else None
+    if tracker:
+        tracker.start()
     # Créer une matrice aléatoire de grande taille
     matrix = np.random.random((matrix_size, matrix_size))
     
@@ -80,12 +84,20 @@ def matrix_benchmark(matrix_size=5000, track_emissions=False):
     execution_time = time.time() - start_time
     memory_mb = matrix.nbytes / (1024 * 1024)
     
-    # Émissions simulées
-    simulated_emissions = execution_time * memory_mb * 0.0001  # Estimation factice
-    
+    tracker.stop() if tracker else None
+    # Estimer les émissions de CO2 (en kg)
+    print(tracker.final_emissions_data)
+    emissions = tracker.final_emissions_data["emissions"] if tracker else 0.0
     return {
-        "matrix_size": (matrix_size, matrix_size),
-        "memory_usage_mb": memory_mb,
-        "execution_time": execution_time,
-        "emissions_kg": simulated_emissions
+        "result": result,
+        "eigenvalues": eigenvalues,
+        "emissions": emissions,
+        "memory_usage_mb": memory_mb
     }
+
+    # return {
+    #     "matrix_size": (matrix_size, matrix_size),
+    #     "memory_usage_mb": memory_mb,
+    #     "execution_time": execution_time,
+    #     "emissions_kg": emissions
+    # }
