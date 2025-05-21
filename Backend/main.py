@@ -64,7 +64,6 @@ async def predict_temperature(params: TemperatureParams):
             raise HTTPException(status_code=400, detail="Méthode inconnue. Utilisez 'direct' ou 'scipy'.")
         
         execution_time = time.time() - start_time
-        
         # Préparer la réponse
         # Générer les timestamps en millisecondes pour chaque température
         timestamps = [int(i * 60 * 1000) for i in range(len(temperatures))]
@@ -72,7 +71,7 @@ async def predict_temperature(params: TemperatureParams):
             "temperatures": temperatures,
             "execution_time_seconds": execution_time,
             "timestamps": timestamps,
-            "carbon_emissions_kg": emissions,
+            "code_carbon": emissions,
             "note": "Les émissions de CO2 sont des estimations simplifiées"
         }
         

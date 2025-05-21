@@ -32,9 +32,8 @@ def calculate_temperature_scipy(ambient_temp, wind_speed, current, initial_temp=
     Calcule la température avec scipy.integrate.odeint
     """
     start_time = time.time()
-    tracker = EmissionsTracker() if track_emissions else None
-    if tracker:
-        tracker.start()
+    tracker = EmissionsTracker()
+    tracker.start()
     
     # Définir les temps pour lesquels nous voulons la solution (0 à 30 minutes)
     t = np.linspace(0, 30 * 60 * 1000, 1800)
@@ -50,24 +49,20 @@ def calculate_temperature_scipy(ambient_temp, wind_speed, current, initial_temp=
     # Extraire les températures (odeint renvoie un tableau différent de solve_ivp)
     temperatures = solution.flatten().tolist()
     
-    execution_time = time.time() - start_time
+    tracker.stop()
     
-    if tracker:
-        emissions = tracker.stop()
-    else:
-        emissions = 0.0
+    emissions = tracker.final_emissions_data
 
     return temperatures, emissions
 
-def matrix_benchmark(matrix_size=5000, track_emissions=False):
+def matrix_benchmark(matrix_size=5000):
     """
     Effectue un benchmark avec une grande matrice aléatoire
     """
     start_time = time.time()
     
-    tracker = EmissionsTracker() if track_emissions else None
-    if tracker:
-        tracker.start()
+    tracker = EmissionsTracker()
+    tracker.start()
     # Créer une matrice aléatoire de grande taille
     matrix = np.random.random((matrix_size, matrix_size))
     
@@ -85,19 +80,15 @@ def matrix_benchmark(matrix_size=5000, track_emissions=False):
     memory_mb = matrix.nbytes / (1024 * 1024)
     
     tracker.stop() if tracker else None
-    # Estimer les émissions de CO2 (en kg)
-    print(tracker.final_emissions_data)
-    emissions = tracker.final_emissions_data["emissions"] if tracker else 0.0
-    return {
-        "result": result,
-        "eigenvalues": eigenvalues,
-        "emissions": emissions,
-        "memory_usage_mb": memory_mb
-    }
+    # Obtenir les émissions de CO2
+    emissions = tracker.final_emissions_data.emissions 
+    # Convertir les émissions en kg
+    emissions = emissions / 1000
 
-    # return {
-    #     "matrix_size": (matrix_size, matrix_size),
-    #     "memory_usage_mb": memory_mb,
-    #     "execution_time": execution_time,
-    #     "emissions_kg": emissions
-    # }
+
+    return {
+        "matrix_size": (matrix_size, matrix_size),
+        "memory_usage_mb": memory_mb,
+        "execution_time": execution_time,
+        "emissions_kg": emissions
+    }

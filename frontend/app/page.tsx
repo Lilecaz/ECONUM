@@ -1,24 +1,60 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, AlertTriangle, ThermometerSun, Leaf } from 'lucide-react'
+import { Loader2, AlertTriangle, ThermometerSun } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { TemperatureChart } from "@/components/temperature-chart"
 import { CarbonEmissionsCard } from "@/components/carbon-emissions-card"
 
+interface CodeCarbonData {
+  timestamp: string
+  project_name: string
+  run_id: string
+  experiment_id: string
+  duration: number
+  emissions: number
+  emissions_rate: number
+  cpu_power: number
+  gpu_power: number
+  ram_power: number
+  cpu_energy: number
+  gpu_energy: number
+  ram_energy: number
+  energy_consumed: number
+  country_name: string
+  country_iso_code: string
+  region: string
+  cloud_provider: string
+  cloud_region: string
+  os: string
+  python_version: string
+  codecarbon_version: string
+  cpu_count: number
+  cpu_model: string
+  gpu_count: number
+  gpu_model: string
+  longitude: number
+  latitude: number
+  ram_total_size: number
+  tracking_mode: string
+  on_cloud: string
+  pue: number
+}
+
 interface TemperatureData {
+  code_carbon: CodeCarbonData
   temperatures: number[]
   execution_time_seconds: number
   timestamps: number[]
-  carbon_emissions_kg: number
+  carbon_emissions_kg: number | CodeCarbonData
   note?: string
 }
 
@@ -68,7 +104,59 @@ export default function Home() {
       }
 
       const responseData = await response.json()
-      setData(responseData)
+      console.log("Données de la réponse:", responseData)
+
+      // Traiter les données d'émissions de carbone
+      const carbonData = responseData.carbon_emissions_kg
+
+      // Si les données sont un objet, c'est probablement les données complètes de CodeCarbon
+      if (typeof carbonData === "object" && carbonData !== null) {
+        setData({
+          ...responseData,
+          carbon_emissions_kg: carbonData,
+        })
+      } else {
+        // Sinon, créer un objet CodeCarbon simulé avec les données disponibles
+        const simulatedCodeCarbonData: CodeCarbonData = {
+          timestamp: new Date().toISOString(),
+          project_name: "ECONUM",
+          run_id: "0b3253a1-1807-4152-8193-5401ce598fa9",
+          experiment_id: "5b0fa12a-3dd7-45bb-9766-cc326314d9f1",
+          duration: responseData.execution_time_seconds,
+          emissions: carbonData,
+          emissions_rate: carbonData / responseData.execution_time_seconds,
+          cpu_power: 0.63,
+          gpu_power: 0.1,
+          ram_power: 3.0,
+          cpu_energy: 1.78e-10,
+          gpu_energy: 4.73e-8,
+          ram_energy: 7.31e-10,
+          energy_consumed: 4.82e-8,
+          country_name: "France",
+          country_iso_code: "FRA",
+          region: "",
+          cloud_provider: "",
+          cloud_region: "",
+          os: "macOS-15.5-arm64-arm-64bit",
+          python_version: "3.12.1",
+          codecarbon_version: "3.0.1",
+          cpu_count: 8,
+          cpu_model: "Apple M2",
+          gpu_count: 1,
+          gpu_model: "Apple M2",
+          longitude: 2.3387,
+          latitude: 48.8582,
+          ram_total_size: 8,
+          tracking_mode: "machine",
+          on_cloud: "N",
+          pue: 1,
+        }
+
+        setData({
+          ...responseData,
+          carbon_emissions_kg: simulatedCodeCarbonData,
+        })
+      }
     } catch (err) {
       setError(`Erreur lors de la requête: ${err instanceof Error ? err.message : String(err)}`)
     } finally {
@@ -88,12 +176,6 @@ export default function Home() {
     return "safe"
   }
 
-  useEffect(() => {
-    if (data) {
-      console.log("Données de température:", data)
-    }
-  }
-    , [data])
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
@@ -244,10 +326,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <CarbonEmissionsCard
-                    emissionsKg={data.carbon_emissions_kg}
-                    note={data.note}
-                  />
+                  <CarbonEmissionsCard code_carbon_data={data.code_carbon} note={data.note} />
 
                   <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
                     <TabsList className="grid w-full grid-cols-2">
@@ -257,7 +336,7 @@ export default function Home() {
                     <TabsContent value="graph" className="pt-4">
                       <div className="h-[300px]">
                         <TemperatureChart
-                          timestamps={data.timestamps.map((t) => `${t} min`)}
+                          timestamps={data.timestamps.map((t) => `${Math.floor(t / 60000)} ms`)}
                           temperatures={data.temperatures}
                         />
                       </div>
@@ -274,7 +353,7 @@ export default function Home() {
                           <TableBody>
                             {data.temperatures.map((temp, index) => (
                               <TableRow key={index}>
-                                <TableCell>{data.timestamps[index]}</TableCell>
+                                <TableCell>{Math.floor(data.timestamps[index])}</TableCell>
                                 <TableCell>{temp.toFixed(2)}</TableCell>
                               </TableRow>
                             ))}
