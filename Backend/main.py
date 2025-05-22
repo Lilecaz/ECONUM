@@ -9,12 +9,7 @@ from scipy import integrate
 import os
 
 
-# Créer le dossier static s'il n'existe pas
-if not os.path.exists('static'):
-    os.makedirs('static')
-    # Créer un fichier index.html minimal si nécessaire
-    with open('static/index.html', 'w') as f:
-        f.write("<html><body><h1>API de Prédiction de Température de Câble</h1></body></html>")
+
 
 # Importer les fonctions de calcul
 from temperature_model import calculate_temperature_scipy, matrix_benchmark
@@ -41,8 +36,7 @@ class TemperatureParams(BaseModel):
 @app.get("/")
 async def read_root():
     """Page d'accueil"""
-    from fastapi.responses import FileResponse
-    return FileResponse('../Frontend/static/index.html')
+    return {"message": "Bienvenue sur l'API de Prédiction de Température de Câble"}
 
 @app.post("/predict/", response_model=Dict[str, Any])
 async def predict_temperature(params: TemperatureParams):

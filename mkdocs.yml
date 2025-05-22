@@ -1,0 +1,17 @@
+site_name: ECONUM
+nav:
+  - Accueil: index.md
+  - Rapport: rapport.md
+  - Documentation Utilisateur: utilisateur.md
+  - Documentation Technique: technique.md
+theme:
+  name: material
+  language: fr
+  palette:
+    primary: blue
+    accent: light blue
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
