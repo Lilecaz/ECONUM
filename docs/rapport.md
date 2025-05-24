@@ -46,6 +46,16 @@ La solution ECONUM se compose de deux composants principaux :
 
 ---
 
+
+## Empreinte du front (HTML statique)
+
+| Composant    | Énergie (Wh) | Optimisation possible          |
+| ------------ | ------------ | ------------------------------ |
+| HTML + JS    | 0.01         | Lazy loading, cache navigateur |
+| Requêtes API | 0.08         | Délais, throttling client      |
+
+---
+
 ## Conclusion et recommandations
 
 - **Backend** :
