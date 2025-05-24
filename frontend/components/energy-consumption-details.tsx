@@ -81,23 +81,23 @@ export function EnergyConsumptionDetails({ data }: EnergyConsumptionDetailsProps
 
                     <TabsContent value="summary" className="space-y-4 pt-4">
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-gray-100 rounded-lg p-3">
+                            <div className="bg-gray-500 rounded-lg p-3">
                                 <div className="flex items-center mb-1">
-                                    <Clock className="h-4 w-4 text-gray-500 mr-1" />
-                                    <p className="text-sm text-gray-500">Durée</p>
+                                    <Clock className="h-4 w-4  mr-1" />
+                                    <p className="text-sm ">Durée</p>
                                 </div>
                                 <p className="text-lg font-semibold">{data.duration.toFixed(2)} s</p>
                             </div>
-                            <div className="bg-gray-100 rounded-lg p-3">
+                            <div className="bg-gray-500 rounded-lg p-3">
                                 <div className="flex items-center mb-1">
-                                    <Globe className="h-4 w-4 text-gray-500 mr-1" />
-                                    <p className="text-sm text-gray-500">Émissions CO₂</p>
+                                    <Globe className="h-4 w-4  mr-1" />
+                                    <p className="text-sm ">Émissions CO₂</p>
                                 </div>
                                 <p className="text-lg font-semibold">{formatValue(data.emissions, "kg")}</p>
                             </div>
                         </div>
 
-                        <div className="bg-gray-100 rounded-lg p-4">
+                        <div className="bg-gray-500 rounded-lg p-4">
                             <h3 className="text-sm font-medium mb-2">Répartition de la consommation</h3>
                             <div className="space-y-2">
                                 <div>
@@ -130,12 +130,12 @@ export function EnergyConsumptionDetails({ data }: EnergyConsumptionDetailsProps
                             </div>
                         </div>
 
-                        <div className="bg-gray-100 rounded-lg p-4">
+                        <div className="bg-gray-500 rounded-lg p-4">
                             <h3 className="text-sm font-medium mb-2">Localisation</h3>
                             <p className="text-sm">
                                 {data.country_name} ({data.country_iso_code})
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs mt-1">
                                 Lat: {data.latitude}, Long: {data.longitude}
                             </p>
                         </div>
@@ -143,44 +143,44 @@ export function EnergyConsumptionDetails({ data }: EnergyConsumptionDetailsProps
 
                     <TabsContent value="energy" className="space-y-4 pt-4">
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-gray-100 rounded-lg p-3">
-                                <p className="text-sm text-gray-500">Énergie totale consommée</p>
+                            <div className="bg-gray-500 rounded-lg p-3">
+                                <p className="text-sm ">Énergie totale consommée</p>
                                 <p className="text-lg font-semibold">{formatValue(data.energy_consumed, "kWh")}</p>
                             </div>
-                            <div className="bg-gray-100 rounded-lg p-3">
-                                <p className="text-sm text-gray-500">Taux d'émission</p>
+                            <div className="bg-gray-500 rounded-lg p-3">
+                                <p className="text-sm ">Taux d'émission</p>
                                 <p className="text-lg font-semibold">{formatValue(data.emissions_rate, "kg/s")}</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-3 gap-4">
-                            <div className="bg-gray-100 rounded-lg p-3">
+                            <div className="bg-gray-500 rounded-lg p-3">
                                 <div className="flex items-center mb-1">
                                     <Cpu className="h-4 w-4 text-blue-500 mr-1" />
-                                    <p className="text-sm text-gray-500">Puissance CPU</p>
+                                    <p className="text-sm ">Puissance CPU</p>
                                 </div>
                                 <p className="text-base font-semibold">{data.cpu_power.toFixed(2)} W</p>
                             </div>
-                            <div className="bg-gray-100 rounded-lg p-3">
+                            <div className="bg-gray-500 rounded-lg p-3">
                                 <div className="flex items-center mb-1">
                                     <Server className="h-4 w-4 text-purple-500 mr-1" />
-                                    <p className="text-sm text-gray-500">Puissance GPU</p>
+                                    <p className="text-sm ">Puissance GPU</p>
                                 </div>
                                 <p className="text-base font-semibold">{data.gpu_power.toFixed(2)} W</p>
                             </div>
-                            <div className="bg-gray-100 rounded-lg p-3">
+                            <div className="bg-gray-500 rounded-lg p-3">
                                 <div className="flex items-center mb-1">
                                     <Memory className="h-4 w-4 text-green-500 mr-1" />
-                                    <p className="text-sm text-gray-500">Puissance RAM</p>
+                                    <p className="text-sm ">Puissance RAM</p>
                                 </div>
                                 <p className="text-base font-semibold">{data.ram_power.toFixed(2)} W</p>
                             </div>
                         </div>
 
-                        <div className="bg-gray-100 rounded-lg p-4">
+                        <div className="bg-gray-500 rounded-lg p-4">
                             <h3 className="text-sm font-medium mb-2">Facteur PUE</h3>
                             <p className="text-base font-semibold">{data.pue}</p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs  mt-1">
                                 Power Usage Effectiveness - Mesure l'efficacité énergétique du centre de données
                             </p>
                         </div>

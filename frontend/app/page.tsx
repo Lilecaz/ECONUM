@@ -249,7 +249,6 @@ export default function Home() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="scipy">SciPy (Haute précision)</SelectItem>
-                      <SelectItem value="direct">Méthode directe</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -310,16 +309,16 @@ export default function Home() {
               {data && (
                 <>
                   <div className="mb-4 flex flex-wrap gap-4">
-                    <div className="bg-gray-100 rounded-lg p-3 flex-1">
-                      <p className="text-sm text-gray-500">Temps d'exécution</p>
+                    <div className="bg-gray-500 rounded-lg p-3 flex-1 text-center">
+                      <p className="text-sm">Temps d'exécution</p>
                       <p className="text-lg font-semibold">{data.execution_time_seconds.toFixed(4)} s</p>
                     </div>
-                    <div className="bg-gray-100 rounded-lg p-3 flex-1">
-                      <p className="text-sm text-gray-500">Température maximale</p>
+                    <div className="bg-gray-500 rounded-lg p-3 flex-1">
+                      <p className="text-sm">Température maximale</p>
                       <p className="text-lg font-semibold">{getMaxTemperature().toFixed(2)} °C</p>
                     </div>
-                    <div className="bg-gray-100 rounded-lg p-3 flex-1">
-                      <p className="text-sm text-gray-500">Température finale</p>
+                    <div className="bg-gray-500 rounded-lg p-3 flex-1">
+                      <p className="text-sm ">Température finale</p>
                       <p className="text-lg font-semibold">
                         {data.temperatures[data.temperatures.length - 1].toFixed(2)} °C
                       </p>

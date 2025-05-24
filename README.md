@@ -10,7 +10,6 @@ ECONUM est une application moderne de prévision de température de câble élec
 - Simulation précise de la température des câbles
 - Visualisation des données par graphique interactif Plotly et tableau
 - Jauge de température avec indicateurs visuels
-- Choix entre différentes méthodes de calcul (SciPy ou méthode directe)
 - Affichage des métriques clés (temps d'exécution, température maximale, etc.)
 
 ## Architecture
